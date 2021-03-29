@@ -1,0 +1,31 @@
+{
+  "name": "jsonparser",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "concurrently --kill-others-on-fail  \"npm run watch\" \"npm run start:sever\" ",
+    "start:sever": "nodemon ./bin/www",
+    "watch": "npx webpack -w"
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.4",
+    "core-js": "^3.9.1",
+    "debug": "~2.6.9",
+    "ejs": "~2.6.1",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "morgan": "~1.9.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.13.10",
+    "@babel/node": "^7.13.10",
+    "@babel/plugin-proposal-optional-chaining": "^7.13.8",
+    "@babel/preset-env": "^7.13.10",
+    "babel-cli": "^6.26.0",
+    "babel-loader": "^8.2.2",
+    "concurrently": "^6.0.0",
+    "nodemon": "^2.0.7",
+    "webpack": "^5.27.1",
+    "webpack-cli": "^4.5.0"
+  }
+}
