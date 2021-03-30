@@ -55,10 +55,15 @@ const preTokenizer = (str) => {
   return tokenArray;
 };
 
-const tokenizer = _.pipe(preTokenizer, arraySpaceParser, arrayQuotesParser);
+const blankFilter = (arr) => arr.filter((v) => v !== "");
+
+const tokenizer = _.pipe(
+  preTokenizer,
+  arraySpaceParser,
+  arrayQuotesParser,
+  blankFilter
+);
 
 const main = _.pipe(tokenizer, lexer);
 
-console.log(main(`["name",3,null,{3:[1,3]}]`));
-
-
+console.log(main(`["name",3,null,{3:[1,3] , a: 3}]`));

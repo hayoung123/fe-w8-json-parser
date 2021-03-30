@@ -3,11 +3,13 @@ const _ = require("./utils");
 const switchSign = (value) => {
   switch (value) {
     case "[":
+      return { type: "openArray", value };
     case "]":
-      return { type: "array", value };
+      return { type: "closeArray", value };
     case "{":
+      return { type: "openObject", value };
     case "}":
-      return { type: "object", value };
+      return { type: "closeObject", value };
     case ":":
       return { type: "objSeparator", value };
     case "null":
@@ -32,6 +34,14 @@ const checkType = (value, isKey = false) => {
   return switchSign(value);
 };
 
+const objTypeParser = (arr) =>
+  arr.map((v, idx) => {
+    if (arr[idx + 1] && arr[idx + 1].type === "objSeparator")
+      v["objType"] = "propKey";
+    if (arr[idx - 1] && arr[idx - 1].type === "objSeparator")
+      v["objType"] = "propValue";
+    return v;
+  });
 const preLexer = (arr) =>
   arr.map((value, idx, originArr) => {
     if (isObjSeparator(originArr[idx + 1])) return checkType(value, true);
@@ -44,5 +54,5 @@ const stringParser = (arr) =>
     return { type, value };
   });
 
-const lexer = _.pipe(preLexer, stringParser);
+const lexer = _.pipe(preLexer, stringParser, objTypeParser);
 module.exports = lexer;
