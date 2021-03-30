@@ -1,4 +1,5 @@
 const _ = require("./utils.js");
+const lexer = require("./Lexer.js");
 const isSign = (value) => {
   return (
     value === "[" ||
@@ -55,4 +56,7 @@ const preTokenizer = (str) => {
 };
 
 const tokenizer = _.pipe(preTokenizer, arraySpaceParser, arrayQuotesParser);
-console.log(tokenizer(`['null',null]`));
+
+const main = _.pipe(tokenizer, lexer);
+
+console.log(main(`["name",3,null,{3:[1,3]}]`));
