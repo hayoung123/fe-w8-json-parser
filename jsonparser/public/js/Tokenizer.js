@@ -1,3 +1,6 @@
+const _ = require("./utils.js");
+const lexer = require("./Lexer.js");
+const parser = require("./Parser.js");
 const isSign = (value) => {
   return (
     value === "[" ||
@@ -9,33 +12,59 @@ const isSign = (value) => {
   );
 };
 const isStringSign = (value) => value === "'" || value === '"';
+const isRealSign = (stringStack, value) => !stringStack.length && isSign(value);
+const isStartValue = (stringStack, value, preValue) =>
+  !stringStack.length && isSign(preValue) && !isStringSign(value);
+const isStartString = (stringStack, value) =>
+  !stringStack.length && isStringSign(value);
+const isEndString = (stringStack, value) =>
+  value === stringStack[stringStack.length - 1];
+const arraySpaceParser = (arr) => arr.map((v) => v.trim());
 
-const tokenizer = (str) => {
+const arrayQuotesParser = (arr) => arr.map(quotesParser);
+
+const quotesParser = (value) => {
+  if (value[0] === "'" && value[value.length - 1] === "'") {
+    value = value
+      .split("")
+      .slice(1, value.length - 1)
+      .join("");
+    return '"' + value + '"';
+  }
+  return value;
+};
+
+const preTokenizer = (str) => {
   const stringStack = [];
   const tokenArray = str.split("").reduce((acc, cur, idx, arr) => {
-    if (!stringStack.length && isStringSign(cur)) stringStack.push(cur);
-    else if (cur === stringStack[stringStack.length - 1]) stringStack.pop();
+    if (cur === ",") return acc;
+    if (isStartString(stringStack, cur)) {
+      stringStack.push(cur);
+      acc.push(cur);
+      return acc;
+    } else if (isEndString(stringStack, cur)) stringStack.pop();
 
     if (
-      !stringStack.length &&
-      !isStringSign(cur) &&
-      (isSign(cur) || isSign(arr[idx - 1]))
+      isStartValue(stringStack, cur, arr[idx - 1]) ||
+      isRealSign(stringStack, cur)
     )
       acc.push(cur);
-    else {
-      if (stringStack.length && isStringSign(cur)) acc.push(cur);
-      else acc[acc.length - 1] += cur;
-    }
+    else acc[acc.length - 1] += cur;
 
     return acc;
   }, []);
-
   return tokenArray;
 };
-// console.log(tokenizer(`[1]`));
-// console.log(tokenizer(`[1,2]`));
-// console.log(tokenizer(`[1,23,'hello']`));
-// console.log(tokenizer(`{a:1,b:2}`));
-//console.log(tokenizer(`[{a:1,b:2},{a:1,b:2}]`));
-console.log(tokenizer(`['eam[',o,"]n"]`));
-//console.log(tokenizer(`[{hello:[1,2],b:2},{a:'eam[o]n',b:2}]`));
+
+const blankFilter = (arr) => arr.filter((v) => v !== "");
+
+const tokenizer = _.pipe(
+  preTokenizer,
+  arraySpaceParser,
+  arrayQuotesParser,
+  blankFilter
+);
+
+const main = _.pipe(tokenizer, lexer, parser);
+
+console.log(main(`[1]`));
