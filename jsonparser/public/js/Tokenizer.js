@@ -1,5 +1,6 @@
 const _ = require("./utils.js");
 const lexer = require("./Lexer.js");
+const parser = require("./Parser.js");
 const isSign = (value) => {
   return (
     value === "[" ||
@@ -64,6 +65,6 @@ const tokenizer = _.pipe(
   blankFilter
 );
 
-const main = _.pipe(tokenizer, lexer);
+const main = _.pipe(tokenizer, lexer, parser);
 
-console.log(main(`["name",3,null,{3:[1,3] , a: 3}]`));
+console.log(main(`[1]`));

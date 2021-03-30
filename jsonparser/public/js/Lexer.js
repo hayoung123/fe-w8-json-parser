@@ -40,19 +40,26 @@ const objTypeParser = (arr) =>
       v["objType"] = "propKey";
     if (arr[idx - 1] && arr[idx - 1].type === "objSeparator")
       v["objType"] = "propValue";
+      
     return v;
   });
+
+
 const preLexer = (arr) =>
   arr.map((value, idx, originArr) => {
     if (isObjSeparator(originArr[idx + 1])) return checkType(value, true);
     else return checkType(value);
   });
 
+
+
 const stringParser = (arr) =>
   arr.map(({ type, value }) => {
     value = value.replace(/^"/gi, "").replace(/"$/gi, "");
     return { type, value };
   });
+
+
 
 const lexer = _.pipe(preLexer, stringParser, objTypeParser);
 module.exports = lexer;
