@@ -1,3 +1,5 @@
+const _ = require("./utils");
+
 const switchSign = (value) => {
   switch (value) {
     case "[":
@@ -22,11 +24,7 @@ const switchSign = (value) => {
 const isString = (value) => value[0] === '"';
 const isNumber = (value) => !isNaN(parseInt(value));
 const isObjSeparator = (value) => value === ":";
-const lexer = (arr) =>
-  arr.map((value, idx, originArr) => {
-    if (isObjSeparator(originArr[idx + 1])) return checkType(value, true);
-    else return checkType(value);
-  });
+
 const checkType = (value, isKey = false) => {
   if (isKey) return { type: "String", value };
   if (isNumber(value)) return { type: "Number", value };
@@ -34,4 +32,17 @@ const checkType = (value, isKey = false) => {
   return switchSign(value);
 };
 
+const preLexer = (arr) =>
+  arr.map((value, idx, originArr) => {
+    if (isObjSeparator(originArr[idx + 1])) return checkType(value, true);
+    else return checkType(value);
+  });
+
+const stringParser = (arr) =>
+  arr.map(({ type, value }) => {
+    value = value.replace(/^"/gi, "").replace(/"$/gi, "");
+    return { type, value };
+  });
+
+const lexer = _.pipe(preLexer, stringParser);
 module.exports = lexer;

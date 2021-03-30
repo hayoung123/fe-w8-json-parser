@@ -60,3 +60,5 @@ const tokenizer = _.pipe(preTokenizer, arraySpaceParser, arrayQuotesParser);
 const main = _.pipe(tokenizer, lexer);
 
 console.log(main(`["name",3,null,{3:[1,3]}]`));
+
+
