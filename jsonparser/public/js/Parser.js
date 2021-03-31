@@ -1,69 +1,37 @@
-const Node = ({ type, value }) => {
-  if (type === 'init') return { type: 'init', child: [] };
-  else if (type === 'openArray') return { type: 'array', child: [] };
+function makeNode({ type, value }) {
+  if (type === 'Array' || type === 'Object' || type === 'init') return { type, child: [] };
   else return { type, value };
-};
-
-const preParser = (arr, node, prevNode) => {
-  if (!arr.length) return;
-  const curValue = arr.shift();
-  switch (curValue.type) {
-    case 'openArray':
-      const arrayNode = Node(curValue);
-      node.child.push(arrayNode);
-      preParser(arr, arrayNode, node);
-      preParser(arr, node, prevNode);
-      break;
-    case 'closeArray':
-      return;
-    default:
-      const valueNode = Node(curValue);
-      node.child.push(valueNode);
-      preParser(arr, node, prevNode);
-      break;
-  }
-};
-
-const preParser = (arr, node) => {
-  if (!arr.length) return;
-  const curValue = arr.shift();
-  switch (curValue.type) {
-    case 'openArray':
-      const arrayNode = Node(curValue);
-      const newNode = preParser(arr, arrayNode);
-      node.child.push(newNode);
-      preParser(arr, node);
-      break;
-    case 'closeArray':
-      return node;
-    default:
-      const valueNode = Node(curValue);
-      node.child.push(valueNode);
-      preParser(arr, node);
-      return node;
-  }
-};
+}
 
 const preParser = (arr, node) => {
   for (let i = 0; i < arr.length; i++) {
     const value = arr[i];
-    switch (value.type) {
-      case 'openArray':
-        const arrayNode = Node(value);
+    switch (value.subType) {
+      case 'open':
+        const arrayNode = makeNode(value);
         const newNode = preParser(arr.slice(i + 1), arrayNode);
         i += newNode.idx + 1;
         node.child.push(newNode.node);
         break;
-      case 'closeArray':
+      case 'close':
         return { node, idx: i };
+      case 'propsKey':
+        //1. 전체 껍때기 만들기{value:{propKey,propValue},"type": "objectProperty"}
+        //2. propKey에 stringKey넣기
+        //3. valueNode = i+1 propvalue 만들기 {type,~~~}
+        //4-1. value가 array 또는 obejct이면 => newValueNode = preParser(arr.slice(i+2),valueNode)
+        //4-1. propvalue =newValueNode.node  인덱스 = 인덱스 + newValueNode.idx
+        //4-2. 아니면 => propValue = valueNode
+        //4-2. 인덱스 +1
+        break;
       default:
-        node.child.push(Node(value));
+        node.child.push(makeNode(value));
     }
   }
 };
 
 const parser = (arr) => {
-  const initNode = Node({ type: 'init' });
+  const initNode = makeNode({ type: 'init' });
   preParser(arr, initNode);
   return initNode.child;
 };
@@ -71,22 +39,13 @@ const parser = (arr) => {
 // module.exports = parser;
 
 const test = [
-  { type: 'openArray', value: '[' },
-  { type: 'Number', value: '1' },
-  { type: 'openArray', value: '[' },
-  { type: 'Number', value: '2' },
-  { type: 'openArray', value: '[' },
-  { type: 'Number', value: '2' },
-  { type: 'openArray', value: '[' },
-  { type: 'Number', value: '2' },
-  { type: 'closeArray', value: ']' },
-  { type: 'Number', value: '3' },
-  { type: 'closeArray', value: ']' },
-  { type: 'Number', value: '1' },
-  { type: 'closeArray', value: ']' },
-  { type: 'Number', value: '2' },
-  { type: 'closeArray', value: ']' },
+  { type: 'Array', value: '[', subType: 'open' },
+  { type: 'Number', value: '1', subType: undefined },
+  { type: 'Array', value: '[', subType: 'open' },
+  { type: 'Number', value: '2', subType: undefined },
+  { type: 'Number', value: '3', subType: undefined },
+  { type: 'Array', value: ']', subType: 'close' },
+  { type: 'Array', value: ']', subType: 'close' },
 ];
 
-// [1, [2, [2, [2], 3], 1], 2];
 console.dir(parser(test), { depth: null });
