@@ -1,5 +1,7 @@
-function makeNode({ type, value }) {
+function makeNode({ type, value, subType }) {
   if (type === 'Array' || type === 'Object' || type === 'init') return { type, child: [] };
+  else if (subType === 'propKey')
+    return { value: { propKey: { type, value }, propValue: {} }, type: 'objectProperty' };
   else return { type, value };
 }
 
@@ -8,21 +10,27 @@ const preParser = (arr, node) => {
     const value = arr[i];
     switch (value.subType) {
       case 'open':
-        const arrayNode = makeNode(value);
-        const newNode = preParser(arr.slice(i + 1), arrayNode);
-        i += newNode.idx + 1;
+        const parentNode = makeNode(value);
+        const newNode = preParser(arr.slice(i + 1), parentNode);
+        i += newNode.skipIndex;
         node.child.push(newNode.node);
         break;
       case 'close':
-        return { node, idx: i };
-      case 'propsKey':
-        //1. 전체 껍때기 만들기{value:{propKey,propValue},"type": "objectProperty"}
-        //2. propKey에 stringKey넣기
-        //3. valueNode = i+1 propvalue 만들기 {type,~~~}
-        //4-1. value가 array 또는 obejct이면 => newValueNode = preParser(arr.slice(i+2),valueNode)
-        //4-1. propvalue =newValueNode.node  인덱스 = 인덱스 + newValueNode.idx
-        //4-2. 아니면 => propValue = valueNode
-        //4-2. 인덱스 +1
+        return { node, skipIndex: i + 1 };
+      case 'propKey':
+        const nextValue = arr[i + 1];
+        const objNode = makeNode(value);
+        const objProperyValueNode = makeNode(nextValue); //{type:array, child : []}
+        if (nextValue.type === 'Array' || nextValue.type === 'Object') {
+          const newValueNode = preParser(arr.slice(i + 2), objProperyValueNode);
+          objNode.value.propValue = newValueNode.node;
+          node.child.push(objNode);
+          i += newValueNode.skipIndex;
+        } else {
+          objNode.value.propValue = objProperyValueNode;
+          node.child.push(objNode);
+          i += 1;
+        }
         break;
       default:
         node.child.push(makeNode(value));
@@ -36,16 +44,4 @@ const parser = (arr) => {
   return initNode.child;
 };
 
-// module.exports = parser;
-
-const test = [
-  { type: 'Array', value: '[', subType: 'open' },
-  { type: 'Number', value: '1', subType: undefined },
-  { type: 'Array', value: '[', subType: 'open' },
-  { type: 'Number', value: '2', subType: undefined },
-  { type: 'Number', value: '3', subType: undefined },
-  { type: 'Array', value: ']', subType: 'close' },
-  { type: 'Array', value: ']', subType: 'close' },
-];
-
-console.dir(parser(test), { depth: null });
+module.exports = parser;

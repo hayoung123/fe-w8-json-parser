@@ -1,6 +1,6 @@
 const _ = require('./utils.js');
 const lexer = require('./Lexer.js');
-// const parser = require('./Parser.js');
+const parser = require('./Parser.js');
 const isSign = (value) => {
   return (
     value === '[' ||
@@ -54,6 +54,13 @@ const blankFilter = (arr) => arr.filter((v) => v !== '');
 
 const tokenizer = _.pipe(preTokenizer, arraySpaceParser, arrayQuotesParser, blankFilter);
 
-const main = _.pipe(tokenizer, lexer);
+module.exports = tokenizer;
 
-console.log(main(`[1,[2,3]]`));
+const main = _.pipe(tokenizer, lexer, parser);
+
+console.dir(
+  main(
+    '["1a3",[null,false,["11",[112233],{"easy" : ["hello", {"a":"a"}, "world"]},112],55, "99"],{"a":"str", "b":[912,[5656,33],{"key" : "innervalue", "newkeys": [1,2,3,4,5]}]}, true]'
+  ),
+  { depth: null }
+);
