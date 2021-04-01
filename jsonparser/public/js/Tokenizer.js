@@ -56,11 +56,11 @@ const tokenizer = _.pipe(preTokenizer, arraySpaceParser, arrayQuotesParser, blan
 
 module.exports = tokenizer;
 
-const main = _.pipe(tokenizer, lexer, parser);
+// const main = _.pipe(tokenizer, lexer, parser);
 
-console.dir(
-  main(
-    '["1a3",[null,false,["11",[112233],{"easy" : ["hello", {"a":"a"}, "world"]},112],55, "99"],{"a":"str", "b":[912,[5656,33],{"key" : "innervalue", "newkeys": [1,2,3,4,5]}]}, true]'
-  ),
-  { depth: null }
-);
+// console.dir(
+//   main(
+//     '["1a3",[null,false,["11",[112233],{"easy" : ["hello", {"a":"a"}, "world"]},112],55, "99"],{"a":"str", "b":[912,[5656,33],{"key" : "innervalue", "newkeys": [1,2,3,4,5]}]}, true]'
+//   ),
+//   { depth: null }
+// );
