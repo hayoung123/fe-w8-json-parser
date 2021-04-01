@@ -1,4 +1,4 @@
-const { is, isType } = require('./checkType.js');
+import { is, isType } from('./checkType.js');
 
 const arrayDepthCount = (json, cnt = 0, cntArr = []) => {
   if (!json.child || isType.object(json.type)) return;
@@ -32,3 +32,4 @@ const numStrCount = (json, numCnt = 0, strCnt = 0) => {
   });
   return { numCnt, strCnt };
 };
+

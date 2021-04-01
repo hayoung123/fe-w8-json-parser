@@ -1,9 +1,13 @@
-const { isType } = require('./checkType.js');
+import { isType } from "./checkType.js";
 
 function makeNode({ type, value, subType }) {
-  if (isType.array(type) || isType.object(type) || isType.init(type)) return { type, child: [] };
+  if (isType.array(type) || isType.object(type) || isType.init(type))
+    return { type, child: [] };
   else if (isType.propKey(subType))
-    return { value: { propKey: { type, value }, propValue: {} }, type: 'objectProperty' };
+    return {
+      value: { propKey: { type, value }, propValue: {} },
+      type: "objectProperty",
+    };
   else return { type, value };
 }
 
@@ -39,9 +43,9 @@ const preParser = (arr, node) => {
 };
 
 const parser = (arr) => {
-  const initNode = makeNode({ type: 'init' });
+  const initNode = makeNode({ type: "init" });
   preParser(arr, initNode);
   return initNode.child[0];
 };
 
-module.exports = parser;
+export default parser;
