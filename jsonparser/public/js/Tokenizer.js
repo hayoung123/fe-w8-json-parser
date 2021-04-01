@@ -17,7 +17,7 @@ const isStringSign = (value) => value === "'" || value === '"';
 const isRealSign = (stringStack, value) => !stringStack.length && isSign(value);
 //구분자가 아닌 값인지 확인
 const isStartValue = (stringStack, value, preValue) =>
-  !stringStack.length && isSign(preValue) && !isStringSign(value);
+  !stringStack.length && isSign(preValue) && !isStringSign(value) && value !== ' ';
 //스트링 시작하는 따옴표인지 확인
 const isStartString = (stringStack, value) => !stringStack.length && isStringSign(value);
 //스트링 끝나는 따옴표인지 확인
@@ -44,9 +44,6 @@ const preTokenizer = (str) => {
 //양끝 공백 제거
 const arraySpaceParser = (arr) => arr.map((v) => v.trim());
 
-//빈 공백 제거
-const blankFilter = (arr) => arr.filter((v) => v !== '');
-
-const tokenizer = _.pipe(preTokenizer, arraySpaceParser, blankFilter);
+const tokenizer = _.pipe(preTokenizer, arraySpaceParser);
 
 module.exports = tokenizer;
