@@ -11,26 +11,18 @@ const isSign = (value) => {
     value === ':'
   );
 };
+//스트링 따옴표인지 확인
 const isStringSign = (value) => value === "'" || value === '"';
+//문자열에 포함되지 않는 구분자인지 확인
 const isRealSign = (stringStack, value) => !stringStack.length && isSign(value);
+//구분자가 아닌 값인지 확인
 const isStartValue = (stringStack, value, preValue) =>
   !stringStack.length && isSign(preValue) && !isStringSign(value);
+//스트링 시작하는 따옴표인지 확인
 const isStartString = (stringStack, value) => !stringStack.length && isStringSign(value);
-const isEndString = (stringStack, value) => value === stringStack[stringStack.length - 1];
-const arraySpaceParser = (arr) => arr.map((v) => v.trim());
-
-const arrayQuotesParser = (arr) => arr.map(quotesParser);
-
-const quotesParser = (value) => {
-  if (value[0] === "'" && value[value.length - 1] === "'") {
-    value = value
-      .split('')
-      .slice(1, value.length - 1)
-      .join('');
-    return '"' + value + '"';
-  }
-  return value;
-};
+//스트링 끝나는 따옴표인지 확인
+const isEndString = (stringStack, value, nextValue) =>
+  value === stringStack[stringStack.length - 1] && isSign(nextValue);
 
 const preTokenizer = (str) => {
   const stringStack = [];
@@ -40,7 +32,7 @@ const preTokenizer = (str) => {
       stringStack.push(cur);
       acc.push(cur);
       return acc;
-    } else if (isEndString(stringStack, cur)) stringStack.pop();
+    } else if (isEndString(stringStack, cur, arr[idx + 1])) stringStack.pop();
 
     if (isStartValue(stringStack, cur, arr[idx - 1]) || isRealSign(stringStack, cur)) acc.push(cur);
     else acc[acc.length - 1] += cur;
@@ -49,18 +41,20 @@ const preTokenizer = (str) => {
   }, []);
   return tokenArray;
 };
-
+//양끝 공백 제거
+const arraySpaceParser = (arr) => arr.map((v) => v.trim());
+const quotesParser = (value) => {
+  if (value[0] === "'" && value[value.length - 1] === "'") {
+    value = value.slice(1, value.length - 1);
+    return '"' + value + '"';
+  }
+  return value;
+};
+//문자열 양끝 따옴표 ' => "
+const arrayQuotesParser = (arr) => arr.map(quotesParser);
+//빈 공백 제거
 const blankFilter = (arr) => arr.filter((v) => v !== '');
 
 const tokenizer = _.pipe(preTokenizer, arraySpaceParser, arrayQuotesParser, blankFilter);
 
 module.exports = tokenizer;
-
-// const main = _.pipe(tokenizer, lexer, parser);
-
-// console.dir(
-//   main(
-//     '["1a3",[null,false,["11",[112233],{"easy" : ["hello", {"a":"a"}, "world"]},112],55, "99"],{"a":"str", "b":[912,[5656,33],{"key" : "innervalue", "newkeys": [1,2,3,4,5]}]}, true]'
-//   ),
-//   { depth: null }
-// );
