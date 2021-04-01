@@ -1,60 +1,40 @@
 const _ = require('./utils');
+const { is, isType } = require('./checkType.js');
 
-const switchSign = (value) => {
-  switch (value) {
-    case '[':
-      return { type: 'Array', subType: 'open', value };
-    case ']':
-      return { type: 'Array', subType: 'close', value };
-    case '{':
-      return { type: 'Object', subType: 'open', value };
-    case '}':
-      return { type: 'Object', subType: 'close', value };
-    case ':':
-      return { type: 'objSeparator', value };
-    case 'null':
-    case 'NULL':
-      return { type: 'null', value };
-    case 'true':
-    case 'false':
-      return { type: 'Boolean', value };
-    case 'undefined':
-      return { type: 'undefined', value };
-  }
-};
-
-const isString = (value) => value[0] === '"';
-const isNumber = (value) => !isNaN(parseInt(value));
-const isObjSeparator = (value) => value === ':';
-
-const checkType = (value, isKey = false) => {
+const checkType = ({ value, isKey = false }) => {
   if (isKey) return { type: 'String', value };
-  if (isNumber(value)) return { type: 'Number', value };
-  if (isString(value)) return { type: 'String', value };
-  return switchSign(value);
+  if (is.number(value)) return { type: 'Number', value: parseFloat(value) };
+  if (is.string(value)) return { type: 'String', value: value.slice(1, -1) };
+  if (is.openArray(value)) return { type: 'Array', subType: 'open' };
+  if (is.closeArray(value)) return { type: 'Array', subType: 'close' };
+  if (is.openObject(value)) return { type: 'Object', subType: 'open' };
+  if (is.closeObject(value)) return { type: 'Object', subType: 'close' };
+  if (is.colon(value)) return { type: 'objSeparator' };
+  if (is.null(value)) return { type: 'null', value: null };
+  if (is.boolean(value)) return { type: 'Boolean', value: value === 'true' ? true : false };
+  if (is.undefined(value)) return { type: 'undefined', value: undefined };
 };
 
-const objTypeParser = (arr) =>
-  arr.map((v, idx) => {
-    if (arr[idx + 1] && arr[idx + 1].type === 'objSeparator') v['subType'] = 'propKey';
-    if (arr[idx - 1] && arr[idx - 1].type === 'objSeparator') v['subType'] = 'propValue';
+const preLexer = (arr) => {
+  const preLexed = arr.map((value, idx) => {
+    if (is.colon(arr[idx + 1])) return checkType({ value, isKey: true });
+    else return checkType({ value });
+  });
+  return preLexed;
+};
 
+const objTypeParser = (arr) => {
+  const objTypeParsed = arr.map((v, idx) => {
+    if (arr[idx + 1] && isType.objSeparator(arr[idx + 1].type)) {
+      v['subType'] = 'propKey';
+    }
+    if (arr[idx - 1] && isType.objSeparator(arr[idx - 1].type)) v['subType'] = 'propValue';
     return v;
   });
+  return objTypeParsed;
+};
 
-const preLexer = (arr) =>
-  arr.map((value, idx, originArr) => {
-    if (isObjSeparator(originArr[idx + 1])) return checkType(value, true);
-    else return checkType(value);
-  });
+const objSeparatorFilter = (arr) => arr.filter(({ type }) => !isType.objSeparator(type));
 
-const stringParser = (arr) =>
-  arr.map(({ type, value, subType }) => {
-    value = value.replace(/^"/gi, '').replace(/"$/gi, '');
-    return { type, value, subType };
-  });
-
-const objSeparatorFilter = (arr) => arr.filter(({ type }) => type !== 'objSeparator');
-
-const lexer = _.pipe(preLexer, stringParser, objTypeParser, objSeparatorFilter);
+const lexer = _.pipe(preLexer, objTypeParser, objSeparatorFilter);
 module.exports = lexer;
