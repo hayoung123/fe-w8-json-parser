@@ -1,6 +1,8 @@
+const { is, isType } = require('./checkType.js');
+
 function makeNode({ type, value, subType }) {
-  if (type === 'Array' || type === 'Object' || type === 'init') return { type, child: [] };
-  else if (subType === 'propKey')
+  if (isType.array(type) || isType.object(type) || isType.init(type)) return { type, child: [] };
+  else if (isType.propKey(subType))
     return { value: { propKey: { type, value }, propValue: {} }, type: 'objectProperty' };
   else return { type, value };
 }
@@ -8,32 +10,31 @@ function makeNode({ type, value, subType }) {
 const preParser = (arr, node) => {
   for (let i = 0; i < arr.length; i++) {
     const value = arr[i];
-    switch (value.subType) {
-      case 'open':
-        const parentNode = makeNode(value);
-        const newNode = preParser(arr.slice(i + 1), parentNode);
-        i += newNode.skipIndex;
-        node.child.push(newNode.node);
-        break;
-      case 'close':
-        return { node, skipIndex: i + 1 };
-      case 'propKey':
-        const nextValue = arr[i + 1];
-        const objNode = makeNode(value);
-        const objProperyValueNode = makeNode(nextValue); //{type:array, child : []}
-        if (nextValue.type === 'Array' || nextValue.type === 'Object') {
-          const newValueNode = preParser(arr.slice(i + 2), objProperyValueNode);
-          objNode.value.propValue = newValueNode.node;
-          node.child.push(objNode);
-          i += newValueNode.skipIndex;
-        } else {
-          objNode.value.propValue = objProperyValueNode;
-          node.child.push(objNode);
-          i += 1;
-        }
-        break;
-      default:
-        node.child.push(makeNode(value));
+    const subType = value.subType;
+    if (isType.open(subType)) {
+      const parentNode = makeNode(value);
+      const newNode = preParser(arr.slice(i + 1), parentNode);
+      i += newNode.skipIndex;
+      node.child.push(newNode.node);
+    } else if (isType.close(subType)) {
+      return { node, skipIndex: i + 1 };
+    } else if (isType.propKey(subType)) {
+      const nextValue = arr[i + 1];
+      const objPropertyNode = makeNode(value);
+      const objProperyValueNode = makeNode(nextValue);
+      //Object value가 배열 또는 객체일 경우에는 재귀돌려서 결과를 만들어낸다.
+      if (isType.array(nextValue.type) || isType.object(nextValue.type)) {
+        const newValueNode = preParser(arr.slice(i + 2), objProperyValueNode);
+        objPropertyNode.value.propValue = newValueNode.node;
+        node.child.push(objPropertyNode);
+        i += newValueNode.skipIndex;
+      } else {
+        objPropertyNode.value.propValue = objProperyValueNode;
+        node.child.push(objPropertyNode);
+        i += 1;
+      }
+    } else {
+      node.child.push(makeNode(value));
     }
   }
 };
@@ -41,7 +42,7 @@ const preParser = (arr, node) => {
 const parser = (arr) => {
   const initNode = makeNode({ type: 'init' });
   preParser(arr, initNode);
-  return initNode.child;
+  return initNode.child[0];
 };
 
 module.exports = parser;

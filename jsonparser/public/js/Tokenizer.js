@@ -1,15 +1,14 @@
 const _ = require('./utils.js');
-const lexer = require('./Lexer.js');
-const parser = require('./Parser.js');
+const { is } = require('./checkType.js');
 
 const isSign = (value) => {
   return (
-    value === '[' ||
-    value === ',' ||
-    value === ']' ||
-    value === '{' ||
-    value === '}' ||
-    value === ':'
+    is.openArray(value) ||
+    is.closeArray(value) ||
+    is.openObject(value) ||
+    is.closeObject(value) ||
+    is.comma(value) ||
+    is.colon(value)
   );
 };
 //스트링 따옴표인지 확인
