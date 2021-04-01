@@ -54,7 +54,7 @@ const isType = {
     return type === 'Array';
   },
   object(type) {
-    return type === 'Obejct';
+    return type === 'Object';
   },
   number(type) {
     return type === 'Number';
@@ -65,11 +65,11 @@ const isType = {
   boolean(type) {
     return type === 'Boolean';
   },
-  objSeparator(value) {
-    return value === 'objSeparator';
+  objSeparator(type) {
+    return type === 'objSeparator';
   },
-  propKey(value) {
-    return value === 'propKey';
+  propKey(type) {
+    return type === 'propKey';
   },
 };
 

@@ -20,15 +20,15 @@ const preParser = (arr, node) => {
     } else if (isType.propKey(value.subType)) {
       const nextValue = arr[i + 1];
       const objPropertyNode = makeNode(value);
-      const objProperyValueNode = makeNode(nextValue);
+      const objPropertyValueNode = makeNode(nextValue);
       //Object value가 배열 또는 객체일 경우에는 재귀돌려서 결과를 만들어낸다.
       if (isType.array(nextValue.type) || isType.object(nextValue.type)) {
-        const newValueNode = preParser(arr.slice(i + 2), objProperyValueNode);
+        const newValueNode = preParser(arr.slice(i + 2), objPropertyValueNode);
         objPropertyNode.value.propValue = newValueNode.node;
         node.child.push(objPropertyNode);
         i += newValueNode.skipIndex;
       } else {
-        objPropertyNode.value.propValue = objProperyValueNode;
+        objPropertyNode.value.propValue = objPropertyValueNode;
         node.child.push(objPropertyNode);
         i += 1;
       }

@@ -17,7 +17,7 @@ const checkType = ({ value, isKey = false }) => {
 
 const preLexer = (arr) => {
   const preLexed = arr.map((value, idx) => {
-    if (isType.objSeparator(arr[idx + 1])) return checkType({ value, isKey: true });
+    if (is.objSeparator(arr[idx + 1])) return checkType({ value, isKey: true });
     else return checkType({ value });
   });
   return preLexed;
@@ -25,7 +25,9 @@ const preLexer = (arr) => {
 
 const objTypeParser = (arr) => {
   const objTypeParsed = arr.map((v, idx) => {
-    if (arr[idx + 1] && isType.objSeparator(arr[idx + 1].type)) v['subType'] = 'propKey';
+    if (arr[idx + 1] && isType.objSeparator(arr[idx + 1].type)) {
+      v['subType'] = 'propKey';
+    }
     if (arr[idx - 1] && isType.objSeparator(arr[idx - 1].type)) v['subType'] = 'propValue';
     return v;
   });
