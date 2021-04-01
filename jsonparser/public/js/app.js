@@ -5,4 +5,4 @@ const parser = require('./Parser.js');
 
 const jsonParser = _.pipe(tokenizer, lexer);
 
-console.dir(jsonParser("[\"a\",['b','c']]"), { depth: null });
+console.dir(jsonParser('["a",[\'3\',4]]'), { depth: null });

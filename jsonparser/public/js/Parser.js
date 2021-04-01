@@ -1,4 +1,4 @@
-const { is, isType } = require('./checkType.js');
+const { isType } = require('./checkType.js');
 
 function makeNode({ type, value, subType }) {
   if (isType.array(type) || isType.object(type) || isType.init(type)) return { type, child: [] };
@@ -10,15 +10,14 @@ function makeNode({ type, value, subType }) {
 const preParser = (arr, node) => {
   for (let i = 0; i < arr.length; i++) {
     const value = arr[i];
-    const subType = value.subType;
-    if (isType.open(subType)) {
+    if (isType.open(value.subType)) {
       const parentNode = makeNode(value);
       const newNode = preParser(arr.slice(i + 1), parentNode);
       i += newNode.skipIndex;
       node.child.push(newNode.node);
-    } else if (isType.close(subType)) {
+    } else if (isType.close(value.subType)) {
       return { node, skipIndex: i + 1 };
-    } else if (isType.propKey(subType)) {
+    } else if (isType.propKey(value.subType)) {
       const nextValue = arr[i + 1];
       const objPropertyNode = makeNode(value);
       const objProperyValueNode = makeNode(nextValue);

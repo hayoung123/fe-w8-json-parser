@@ -43,18 +43,10 @@ const preTokenizer = (str) => {
 };
 //양끝 공백 제거
 const arraySpaceParser = (arr) => arr.map((v) => v.trim());
-const quotesParser = (value) => {
-  if (value[0] === "'" && value[value.length - 1] === "'") {
-    value = value.slice(1, value.length - 1);
-    return '"' + value + '"';
-  }
-  return value;
-};
-//문자열 양끝 따옴표 ' => "
-const arrayQuotesParser = (arr) => arr.map(quotesParser);
+
 //빈 공백 제거
 const blankFilter = (arr) => arr.filter((v) => v !== '');
 
-const tokenizer = _.pipe(preTokenizer, arraySpaceParser, arrayQuotesParser, blankFilter);
+const tokenizer = _.pipe(preTokenizer, arraySpaceParser, blankFilter);
 
 module.exports = tokenizer;

@@ -24,7 +24,7 @@ const is = {
     return !isNaN(parseInt(value));
   },
   string(value) {
-    return value[0] === '"';
+    return value[0] === '"' || value[0] === "'";
   },
   boolean(value) {
     return value === 'true' || value === 'false';
