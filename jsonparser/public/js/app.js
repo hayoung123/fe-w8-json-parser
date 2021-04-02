@@ -3,7 +3,8 @@ import tokenizer from './Tokenizer.js';
 import lexer from './Lexer.js';
 import parser from './Parser.js';
 
-const jsonlexer = _.pipe(tokenizer, lexer, parser);
+const jsonParser = _.pipe(tokenizer, lexer, parser);
+const jsonlexer = _.pipe(tokenizer, lexer);
 const jsontokenizer = _.pipe(tokenizer);
 const input = _.$('.form-control');
 const btn = _.$('button');

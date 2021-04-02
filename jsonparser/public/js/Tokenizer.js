@@ -26,18 +26,20 @@ const isEndString = (stringStack, value) => value === stringStack[stringStack.le
 const preTokenizer = (str) => {
   const stringStack = [];
   const tokenArray = str.split('').reduce((acc, cur, idx, arr) => {
-    if (cur === ',') return acc;
     if (isStartString(stringStack, cur)) {
       stringStack.push(cur);
       acc.push(cur);
       return acc;
     } else if (isEndString(stringStack, cur, arr[idx + 1])) stringStack.pop();
 
-    if (isStartValue(stringStack, cur, arr[idx - 1]) || isRealSign(stringStack, cur)) acc.push(cur);
-    else acc[acc.length - 1] += cur;
+    if (isStartValue(stringStack, cur, arr[idx - 1]) || isRealSign(stringStack, cur)) {
+      if (is.comma(cur)) return acc;
+      acc.push(cur);
+    } else acc[acc.length - 1] += cur;
 
     return acc;
   }, []);
+  if (stringStack.length) throw Error('짝퉁 스트링!');
   return tokenArray;
 };
 //양끝 공백 제거
