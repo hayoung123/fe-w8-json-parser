@@ -32,9 +32,6 @@ const is = {
   undefined(value) {
     return value === 'undefined';
   },
-  objSeparator(value) {
-    return value === ':';
-  }, // colon 은 무엇이고 objSeparator 는 무엇?
 };
 
 const isType = {
@@ -67,9 +64,6 @@ const isType = {
   },
   objSeparator(type) {
     return type === 'objSeparator';
-  },
-  propKey(type) {
-    return type === 'propKey';
   },
 };
 

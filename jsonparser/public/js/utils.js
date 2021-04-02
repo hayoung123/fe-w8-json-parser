@@ -1,6 +1,3 @@
-// const curry = (fn) => (arg, ...args) =>
-//   args.length ? fn(arg, ...args) : (...args) => fn(arg, ...args);
-
 const _ = {
   add: (target, className) => target.classList.add(className),
 
