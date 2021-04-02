@@ -23,5 +23,5 @@ const _ = {
 
   pipe: (fn, ...fns) => (...args) => _.go(fn(...args), ...fns),
 };
-module.exports = _;
-//export default _;
+
+export default _;

@@ -1,5 +1,5 @@
-const _ = require('./utils.js');
-const { is } = require('./checkType.js');
+import _ from './utils.js';
+import { is } from './checkType.js';
 
 const isSign = (value) => {
   return (
@@ -31,7 +31,7 @@ const preTokenizer = (str) => {
       stringStack.push(cur);
       acc.push(cur);
       return acc;
-    } else if (isEndString(stringStack, cur)) stringStack.pop();
+    } else if (isEndString(stringStack, cur, arr[idx + 1])) stringStack.pop();
 
     if (isStartValue(stringStack, cur, arr[idx - 1]) || isRealSign(stringStack, cur)) acc.push(cur);
     else acc[acc.length - 1] += cur;

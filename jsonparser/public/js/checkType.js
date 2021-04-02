@@ -65,6 +65,12 @@ const isType = {
   objSeparator(type) {
     return type === 'objSeparator';
   },
+<<<<<<< HEAD
+=======
+  propKey(type) {
+    return type === 'propKey';
+  },
+>>>>>>> 19df84735bc8ad33331eead1728d0ed20cbc93b4
 };
 
 module.exports = { is, isType };

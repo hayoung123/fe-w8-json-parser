@@ -1,5 +1,5 @@
-const _ = require('./utils');
-const { is, isType } = require('./checkType.js');
+import _ from './utils';
+import { is, isType } from './checkType.js';
 
 const checkType = ({ value, isKey = false }) => {
   if (isKey) return { type: 'String', value };
@@ -37,4 +37,4 @@ const objTypeParser = (arr) => {
 const objSeparatorFilter = (arr) => arr.filter(({ type }) => !isType.objSeparator(type));
 
 const lexer = _.pipe(preLexer, objTypeParser, objSeparatorFilter);
-module.exports = lexer;
+export default lexer;
