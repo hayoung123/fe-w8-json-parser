@@ -1,49 +1,26 @@
 import _ from './utils.js';
 import { isType } from './checkType.js';
-import tokenizer from './Tokenizer.js';
-import lexer from './Lexer.js';
-import parser from './Parser.js';
 
-const input = _.$('.form-control');
-
-export const clickHandler = () => {
-  $tokenizer.innerHTML = JSON.stringify(jsontokenizer(input.value));
-  $lexer.innerHTML = JSON.stringify(jsonlexer(input.value), null);
-  $parser.innerHTML = JSON.stringify(jsonParser(input.value), null, 2);
-};
-
-const jsonParser = _.pipe(tokenizer, lexer, parser);
-const jsonlexer = _.pipe(tokenizer, lexer);
-const jsontokenizer = _.pipe(tokenizer);
-
-class TokenView {
-  constructor() {}
-  init() {
-    this.$tokenizer = _.$('.tokenizer');
-    this.render();
+export default class View {
+  constructor(token, lexer, parser) {
+    this.$tokenizer = token;
+    this.$lexer = lexer;
+    this.$parser = parser;
   }
-  render(data) {
+
+  tokenizerRender(data) {
     this.$tokenizer.innerHTML = JSON.stringify(data);
   }
-}
-class LexerView {
-  constructor(parsedData) {}
-  init() {
-    this.$lexer = _.$('.lexer');
-    this.render();
+  lexerRender(data) {
+    this.$lexer.innerHTML = JSON.stringify(data, null, 2);
   }
-  render(data) {}
-}
-class ParserView {
-  constructor(parsedData) {}
-  init() {
-    this.$parser = _.$('.parser');
-    this.render();
-  }
-  render(data) {
-    //if(배열이고 [0] 스트링이라면) 토큰
-    //if(배열이고 [0] 객체)  렉서
-    //if(객체라면) 파서
+  parserRender(data) {
+    const count = this.numStrCount(data);
+    this.$parser.innerHTML = `${JSON.stringify(data, null, 2)}
+
+    배열 중첩 수준: ${this.arrayDepthCount(data)} 단계
+    문자열 타입 개수 : ${count.strCnt} 개
+    숫자 타입 개수 : ${count.numCnt} 개`;
   }
   arrayDepthCount(json, cnt = 0, cntArr = []) {
     if (!json.child || isType.object(json.type)) return;

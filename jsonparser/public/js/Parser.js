@@ -1,11 +1,12 @@
-import { isType } from './checkType.js';
+import { isType } from "./checkType.js";
 
 function makeNode({ type, value, subType }) {
-  if (isType.array(type) || isType.object(type) || isType.init(type)) return { type, child: [] };
+  if (isType.array(type) || isType.object(type) || isType.init(type))
+    return { type, child: [] };
   else if (isType.propKey(subType))
     return {
       value: { propKey: { type, value }, propValue: {} },
-      type: 'objectProperty',
+      type: "objectProperty",
     };
   else return { type, value };
 }
@@ -29,12 +30,12 @@ const preParser = (arr, node) => {
         const newValueNode = preParser(arr.slice(i + 2), objPropertyValueNode);
         objPropertyNode.value.propValue = newValueNode.node;
         node.child.push(objPropertyNode);
-        i += newValueNode.skipIndex;
+        i += newValueNode.skipIndex + 1;
       } else {
         objPropertyNode.value.propValue = objPropertyValueNode;
         node.child.push(objPropertyNode);
         i += 1;
-      }
+      } 
     } else {
       node.child.push(makeNode(value));
     }
@@ -42,7 +43,7 @@ const preParser = (arr, node) => {
 };
 
 const parser = (arr) => {
-  const initNode = makeNode({ type: 'init' });
+  const initNode = makeNode({ type: "init" });
   preParser(arr, initNode);
   return initNode.child[0];
 };

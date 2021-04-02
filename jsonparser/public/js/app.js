@@ -1,14 +1,16 @@
 import _ from './utils.js';
-import { clickHandler } from './view.js';
-// import tokenizer from './Tokenizer.js';
-// import lexer from './Lexer.js';
-// import parser from './Parser.js';
+import View from './view.js';
+import tokenizer from './Tokenizer.js';
+import lexer from './Lexer.js';
+import parser from './Parser.js';
 
 const input = _.$('.form-control');
-_.on(btn, 'click', () => clickHandler());
+const btn = _.$('button');
+const view = new View(_.$('.tokenizer'), _.$('.lexer'), _.$('.parser'));
+const clickHandler = () => {
+  _.pipe(tokenizer, view.tokenizerRender.bind(view))(input.value);
+  _.pipe(tokenizer, lexer, (data) => view.lexerRender(data))(input.value);
+  _.pipe(tokenizer, lexer, parser, (data) => view.parserRender(data))(input.value);
+};
 
-const tokenView = new TokenView();
-const lexerView = new LexerView();
-pipe(token, tokenView.render)(input.value);
-pipe(token, lexer, new LexerView());
-pipe(token, lexer, parser, new View());
+_.on(btn, 'click', () => clickHandler());
