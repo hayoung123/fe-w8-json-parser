@@ -36,6 +36,20 @@ const objTypeParser = (arr) => {
 
 const objSeparatorFilter = (arr) => arr.filter(({ type }) => !isType.objSeparator(type));
 
-const lexer = _.pipe(preLexer, objTypeParser, objSeparatorFilter);
+const bracketErrorHandler = (lexedArray) => {
+  const stack = [];
+  lexedArray.forEach(({ type, subType }) => {
+    if (isType.open(subType)) stack.push(type);
+    if (isType.close(subType)) {
+      if (!stack.length) throw Error('짝퉁 괄호');
+      if (stack[stack.length - 1] === type) stack.pop();
+    }
+  });
+
+  if (stack.length) throw Error('짝퉁 괄호');
+  return lexedArray;
+};
+
+const lexer = _.pipe(preLexer, objTypeParser, objSeparatorFilter, bracketErrorHandler);
 
 export default lexer;
