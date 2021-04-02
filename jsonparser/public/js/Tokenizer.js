@@ -45,4 +45,4 @@ const arraySpaceParser = (arr) => arr.map((v) => v.trim());
 const blankParser = (arr) => arr.filter((v) => v !== '');
 const tokenizer = _.pipe(preTokenizer, arraySpaceParser, blankParser);
 
-module.exports = tokenizer;
+export default tokenizer;

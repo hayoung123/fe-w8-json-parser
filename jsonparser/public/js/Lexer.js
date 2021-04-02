@@ -37,4 +37,5 @@ const objTypeParser = (arr) => {
 const objSeparatorFilter = (arr) => arr.filter(({ type }) => !isType.objSeparator(type));
 
 const lexer = _.pipe(preLexer, objTypeParser, objSeparatorFilter);
+
 export default lexer;
