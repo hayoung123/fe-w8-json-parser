@@ -14,7 +14,7 @@ const $parser = _.$(".parser");
 
 const clickHandler = () => {
   $tokenizer.innerHTML = JSON.stringify(jsontokenizer(input.value));
-  $lexer.innerHTML = JSON.stringify(jsonlexer(input.value), null, 1);
+  $lexer.innerHTML = JSON.stringify(jsonlexer(input.value), null, "");
   $parser.textContent = JSON.stringify(jsonParser(input.value), null, 2);
 };
 
