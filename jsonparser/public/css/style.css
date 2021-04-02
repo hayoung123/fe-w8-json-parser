@@ -1,7 +1,83 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap');
+
+
 body {
   padding: 50px;
 }
 
-a {
-  color: #00b7ff;
+section {
+
+  display: flex;
+  height: 50rem;
+  justify-content: center;
+  margin-top: 2rem;
+
+}
+
+header {
+  font-family: 'Orbitron', sans-serif;
+  text-align: center;
+  font-size: 3rem;
+
+}
+
+.parser {
+  margin-top: 1rem;
+  width: 95%;
+  height: 16rem;
+  border: 1px solid;
+  overflow-y: scroll;
+  padding: .375rem .75rem;
+}
+
+.lexer {
+  margin-top: 1rem;
+  width: 95%;
+  height: 6rem;
+  border: 1px solid;
+  overflow-y: scroll;
+  padding: .375rem .75rem;
+}
+
+.tokenizer {
+  margin-top: 1rem;
+  margin-top: 1rem;
+  width: 95%;
+  height: 6rem;
+  border: 1px solid;
+  overflow-y: scroll;
+  padding: .375rem .75rem;
+}
+
+.form-control {
+  height: 70%;
+  line-height: 1.3;
+  border-radius: 10px;
+  width: 17rem;
+}
+
+.btn {
+  margin-top: 1rem;
+}
+
+
+.middle__div {
+  margin-right: 2rem;
+  margin-top: 40;
+  margin-top: 13rem;
+  margin-left: 2rem;
+  font-size: 4rem;
+}
+
+.first__div {
+  flex-direction: column;
+  display: flex;
+  width: 22rem;
+
+}
+
+.last__div {
+  width: 60%;
+  font-size: 1.4rem;
+  font-family: 'Orbitron', sans-serif;
 }

@@ -1,5 +1,5 @@
-const _ = require('./utils');
-const { is, isType } = require('./checkType.js');
+import _ from './utils';
+import { is, isType } from './checkType.js';
 
 const checkType = ({ value, isKey = false }) => {
   if (isKey) return { type: 'String', value };
@@ -36,5 +36,20 @@ const objTypeParser = (arr) => {
 
 const objSeparatorFilter = (arr) => arr.filter(({ type }) => !isType.objSeparator(type));
 
-const lexer = _.pipe(preLexer, objTypeParser, objSeparatorFilter);
-module.exports = lexer;
+const bracketErrorHandler = (lexedArray) => {
+  const stack = [];
+  lexedArray.forEach(({ type, subType }) => {
+    if (isType.open(subType)) stack.push(type);
+    if (isType.close(subType)) {
+      if (!stack.length) throw Error('짝퉁 괄호');
+      if (stack[stack.length - 1] === type) stack.pop();
+    }
+  });
+
+  if (stack.length) throw Error('짝퉁 괄호');
+  return lexedArray;
+};
+
+const lexer = _.pipe(preLexer, objTypeParser, objSeparatorFilter, bracketErrorHandler);
+
+export default lexer;

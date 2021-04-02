@@ -1,6 +1,3 @@
-// const curry = (fn) => (arg, ...args) =>
-//   args.length ? fn(arg, ...args) : (...args) => fn(arg, ...args);
-
 const _ = {
   add: (target, className) => target.classList.add(className),
 
@@ -23,5 +20,5 @@ const _ = {
 
   pipe: (fn, ...fns) => (...args) => _.go(fn(...args), ...fns),
 };
-module.exports = _;
-//export default _;
+
+export default _;
